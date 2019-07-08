@@ -75,8 +75,8 @@ export default class MyProject extends Component {
   render() {
     if (this.state.isLoading) {
       return (
-          <View style={{flex: 1, paddingTop: 20}}>
-            <ActivityIndicator />
+          <View style={styles.container}>
+            <ActivityIndicator size= "large" animating/>
           </View>
       );
     }
@@ -87,25 +87,27 @@ export default class MyProject extends Component {
 
           <TextInput
               style={styles.TextInputStyleClass}
-              onChangeText={(text) => this.SearchFilterFunction(text)}
-              value={this.state.text}
               underlineColorAndroid='transparent'
               placeholder="Search Here"
+
+              onChangeText={(text) => this.SearchFilterFunction(text)}
+              value={this.state.text}
+
           />
 
           <ListView
 
               dataSource={this.state.dataSource}
 
-              renderSeparator= {this.ListViewItemSeparator}
+              renderSeparator= {this.ListViewItemSeparator }
 
-              renderRow={(rowData) => <Text style={styles.rowViewContainer}
+              renderRow={(rowData) => <Text style={styles.words}
 
                onPress={this.GetListViewItem.bind(this, rowData.Make_Name)} >{rowData.Make_Name}</Text>}
 
               enableEmptySections={true}
 
-              style={{marginTop: 10}}
+              style={{marginTop: 5}}
 
           />
 
@@ -134,13 +136,35 @@ const styles = StyleSheet.create({
 
   TextInputStyleClass:{
 
-    textAlign: 'center',
+    textAlign: 'left',
     height: 40,
     borderWidth: 1,
-    borderColor: '#009688',
-    borderRadius: 7 ,
-    backgroundColor : "#FFFFFF"
+    borderColor: 'transparent',
+      borderBottomWidth: 1,
+      borderBottomColor: 'black',
+    //borderRadius: 7 ,
+    backgroundColor : "#FFFFFF",
+      marginTop: 40,
+      fontSize: 20,
 
-  }
 
+
+  },
+    container: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#F5FCFF',
+        width: "100%"
+    },
+    item: {
+        padding: 15,
+    },
+    words: {
+        fontSize: 20,
+        paddingTop: 20,
+        paddingBottom: 20,
+        paddingLeft: 5,
+        fontWeight: 'bold'
+    },
 });
