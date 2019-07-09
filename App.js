@@ -1,170 +1,225 @@
-
 import React, { Component } from 'react';
+import {
+    ScrollView,
+    StyleSheet,
+    Text,
+    Button,
+    View,
+    SafeAreaView,
+} from 'react-native';
+import Modal from 'react-native-modal';
 
-import { Text, StyleSheet, View, ListView, TextInput, ActivityIndicator, Alert } from 'react-native';
+import MakeModal from "./src/MakeModal";
 
-export default class MyProject extends Component {
-
-  constructor(props) {
-
-    super(props);
-
-    this.state = {
-
-      isLoading: true,
-      text: '',
-
+export default class Example extends Component {
+    state = {
+        visibleModalId: null,
     };
 
-    this.arrayholder = [] ;
-  }
+    renderModalContent = () => (
+        <View style={styles.content}>
+            <MakeModal>
 
-  componentDidMount() {
-    return fetch('https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes?format=json&fbclid=IwAR3mohzTTmrGRpZ9Q2gRBFGa2eFmZ7W3I3T4gIjFICkP7NS69GqPK1SLtq4')
-        .then((response) => response.json())
-        .then((responseJson) => {
-          let ds = new ListView.DataSource({rowHasChanged: (r1, r2) => r1 !== r2});
-          this.setState({
-            isLoading: false,
-            dataSource: ds.cloneWithRows(responseJson.Results),
-          }, function() {
-
-            // In this block you can do something with new state.
-            this.arrayholder = responseJson.Results ;
-
-          });
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-
-  }
-
-  GetListViewItem (Make_Name) {
-
-    Alert.alert(Make_Name);
-
-  }
-
-  SearchFilterFunction(text){
-
-    const newData = this.arrayholder.filter(function(item){
-      const itemData = item.Make_Name.toUpperCase();
-      const textData = text.toUpperCase();
-      return itemData.indexOf(textData) > -1
-    });
-    this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(newData),
-      text: text
-    })
-  }
-
-  ListViewItemSeparator = () => {
-    return (
-        <View
-            style={{
-              height: .5,
-              width: "100%",
-              backgroundColor: "#000",
-            }}
-        />
-    );
-  };
-
-
-  render() {
-    if (this.state.isLoading) {
-      return (
-          <View style={styles.container}>
-            <ActivityIndicator size= "large" animating/>
-          </View>
-      );
-    }
-
-    return (
-
-        <View style={styles.MainContainer}>
-
-          <TextInput
-              style={styles.TextInputStyleClass}
-              underlineColorAndroid='transparent'
-              placeholder="Search Here"
-
-              onChangeText={(text) => this.SearchFilterFunction(text)}
-              value={this.state.text}
-
-          />
-
-          <ListView
-
-              dataSource={this.state.dataSource}
-
-              renderSeparator= {this.ListViewItemSeparator }
-
-              renderRow={(rowData) => <Text style={styles.words}
-
-               onPress={this.GetListViewItem.bind(this, rowData.Make_Name)} >{rowData.Make_Name}</Text>}
-
-              enableEmptySections={true}
-
-              style={{marginTop: 5}}
-
-          />
-
+            </MakeModal>
         </View>
     );
-  }
+
+    handleOnScroll = event => {
+        this.setState({
+            scrollOffset: event.nativeEvent.contentOffset.y,
+        });
+    };
+
+    handleScrollTo = p => {
+        if (this.scrollViewRef) {
+            this.scrollViewRef.scrollTo(p);
+        }
+    };
+
+    render() {
+        return (
+            <View style={styles.container}>
+                <Button
+                    onPress={() => this.setState({ visibleModal: 'default' })}
+                    title="Default"
+                />
+                <Button
+                    onPress={() => this.setState({ visibleModal: 'sliding' })}
+                    title="Sliding from the sides"
+                />
+                <Button
+                    onPress={() => this.setState({ visibleModal: 'slow' })}
+                    title="Sloooow"
+                />
+                <Button
+                    onPress={() => this.setState({ visibleModal: 'fancy' })}
+                    title="Fancy!"
+                />
+                <Button
+                    onPress={() => this.setState({ visibleModal: 'bottom' })}
+                    title="Bottom half"
+                />
+                <Button
+                    onPress={() => this.setState({ visibleModal: 'backdropPress' })}
+                    title="Close on backdrop press"
+                />
+                <Button
+                    onPress={() => this.setState({ visibleModal: 'swipeable' })}
+                    title="Swipeable"
+                />
+                <Button
+                    onPress={() => this.setState({ visibleModal: 'scrollable' })}
+                    title="Scrollable"
+                />
+                <Button
+                    onPress={() => this.setState({ visibleModal: 'customBackdrop' })}
+                    title="Custom backdrop"
+                />
+                <Modal isVisible={this.state.visibleModal === 'default'}>
+                    {this.renderModalContent()}
+                </Modal>
+                <Modal
+                    isVisible={this.state.visibleModal === 'sliding'}
+                    animationIn="slideInLeft"
+                    animationOut="slideOutRight"
+                >
+                    {this.renderModalContent()}
+                </Modal>
+                <Modal
+                    isVisible={this.state.visibleModal === 'slow'}
+                    animationInTiming={1000}
+                    animationOutTiming={1000}
+                    backdropTransitionInTiming={800}
+                    backdropTransitionOutTiming={800}
+                >
+                    {this.renderModalContent()}
+                </Modal>
+                <Modal
+                    isVisible={this.state.visibleModal === 'fancy'}
+                    backdropColor="white"
+                   backdropOpacity={1.0}
+                    animationIn="zoomInDown"
+                    animationOut="zoomOutUp"
+                    animationInTiming={600}
+                    animationOutTiming={600}
+                    backdropTransitionInTiming={600}
+                    backdropTransitionOutTiming={600}
+                >
+                    {this.renderModalContent()}
+                </Modal>
+                <Modal
+                    isVisible={this.state.visibleModal === 'bottom'}
+                    onSwipeComplete={() => this.setState({ visibleModal: null })}
+                    swipeDirection={['up', 'left', 'right', 'down']}
+                    style={styles.bottomModal}
+                >
+                    {this.renderModalContent()}
+                </Modal>
+                <Modal
+                    isVisible={this.state.visibleModal === 'backdropPress'}
+                    onBackdropPress={() => this.setState({ visibleModal: null })}
+                >
+                    {this.renderModalContent()}
+                </Modal>
+                <Modal
+                    isVisible={this.state.visibleModal === 'swipeable'}
+                    onSwipeComplete={() => this.setState({ visibleModal: null })}
+                    swipeDirection={['down']}
+                >
+                    {this.renderModalContent()}
+                </Modal>
+                <Modal
+                    isVisible={this.state.visibleModal === 'scrollable'}
+                    onSwipeComplete={() => this.setState({ visibleModal: null })}
+                    swipeDirection="down"
+                    scrollTo={this.handleScrollTo}
+                    scrollOffset={this.state.scrollOffset}
+                    scrollOffsetMax={400 - 300} // content height - ScrollView height
+                    style={styles.bottomModal}
+                >
+                    <View style={styles.scrollableModal}>
+                        <ScrollView
+                            ref={ref => (this.scrollViewRef = ref)}
+                            onScroll={this.handleOnScroll}
+                            scrollEventThrottle={16}
+                        >
+                            <View style={styles.scrollableModalContent1}>
+                                <Text style={styles.scrollableModalText1}>You can scroll me up! 👆</Text>
+                            </View>
+                            <View style={styles.scrollableModalContent2}>
+                                <Text style={styles.scrollableModalText2}>Same here as well! ☝</Text>
+                            </View>
+                        </ScrollView>
+                    </View>
+                </Modal>
+                <Modal
+                    isVisible={this.state.visibleModal === 'customBackdrop'}
+                    customBackdrop={
+                        <SafeAreaView style={styles.customBackdrop}>
+                            <Text style={styles.customBackdropText}>
+                                I'm in the backdrop! 👋
+                            </Text>
+                        </SafeAreaView>
+                    }
+                >
+                    {this.renderModalContent()}
+                </Modal>
+            </View>
+        );
+    }
 }
-
 const styles = StyleSheet.create({
-
-  MainContainer :{
-
-    justifyContent: 'center',
-    flex:1,
-    margin: 7,
-      marginTop: 30,
-
-
-
-  },
-
-  rowViewContainer: {
-    fontSize: 17,
-    padding: 10
-  },
-
-  TextInputStyleClass:{
-
-    textAlign: 'left',
-    height: 40,
-    borderWidth: 1,
-    borderColor: 'transparent',
-      borderBottomWidth: 1,
-      borderBottomColor: 'black',
-    //borderRadius: 7 ,
-    backgroundColor : "#FFFFFF",
-      marginTop: 40,
-      fontSize: 20,
-
-
-
-  },
     container: {
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF',
-        width: "100%"
+        backgroundColor: 'white',
     },
-    item: {
-        padding: 15,
+    content: {
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        alignItems: 'center',
+
+        flex:1,
     },
-    words: {
+    contentTitle: {
         fontSize: 20,
-        paddingTop: 20,
-        paddingBottom: 20,
-        paddingLeft: 5,
-        fontWeight: 'bold'
+        marginBottom: 12,
+    },
+    bottomModal: {
+        justifyContent: 'flex-end',
+        margin: 0,
+    },
+    scrollableModal: {
+        height: 300,
+    },
+    scrollableModalContent1: {
+        height: 200,
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    scrollableModalText1: {
+        fontSize: 20,
+        color: 'white',
+    },
+    scrollableModalContent2: {
+        height: 200,
+        backgroundColor: 'white',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    scrollableModalText2: {
+        fontSize: 20,
+        color: 'white',
+    },
+    customBackdrop: {
+        flex: 1,
+        backgroundColor: 'white',
+        alignItems: 'center',
+    },
+    customBackdropText: {
+        marginTop: 10,
+        fontSize: 17,
     },
 });
