@@ -1,10 +1,11 @@
 
 import React, { Component } from 'react';
 
-import { Text, StyleSheet, View, ListView, TextInput, ActivityIndicator, Alert , Dimensions} from 'react-native';
+import { FlatList, Text, StyleSheet, View, ListView, TextInput, ActivityIndicator, Alert , Dimensions} from 'react-native';
 
 
 let {height, width} = Dimensions.get('window');
+
 
 export default class MakeModal extends Component {
 
@@ -23,6 +24,7 @@ export default class MakeModal extends Component {
     }
 
     componentDidMount() {
+
         return fetch('https://vpic.nhtsa.dot.gov/api/vehicles/getallmakes?format=json&fbclid=IwAR3mohzTTmrGRpZ9Q2gRBFGa2eFmZ7W3I3T4gIjFICkP7NS69GqPK1SLtq4')
             .then((response) => response.json())
             .then((responseJson) => {
@@ -45,8 +47,18 @@ export default class MakeModal extends Component {
 
     GetListViewItem (Make_Name) {
 
+
+
         Alert.alert(Make_Name);
 
+    }
+
+    handleMakeSelected(rowData){
+        console.log(rowData);
+        const makeId = rowData.Make_ID;
+
+        Alert.alert(makeId);
+        console.log(makeId);
     }
 
     SearchFilterFunction(text){
@@ -74,6 +86,20 @@ export default class MakeModal extends Component {
         );
     };
 
+    _keyExtractor(item, index) {
+        return item.Make_ID;
+    }
+
+    renderListItem({item}) {
+        return (
+            <Text style={styles.words}
+                  onPress={this.handleMakeSelected}>
+                {item.Make_Name}
+            </Text>
+        );
+    }
+
+
 
     render() {
         if (this.state.isLoading) {
@@ -98,15 +124,14 @@ export default class MakeModal extends Component {
 
                 />
 
-                <ListView
+                <FlatList
 
-                    dataSource={this.state.dataSource}
-
-                    renderSeparator= {this.ListViewItemSeparator }
-
-                    renderRow={(rowData) => <Text style={styles.words}
-
-                                                  onPress={this.GetListViewItem.bind(this, rowData.Make_Name)} >{rowData.Make_Name}</Text>}
+                    data={this.state.dataSource}
+                    extraData={this.state}
+                    keyExtractor={this._keyExtractor}
+                    renderItem={
+                        this.renderListItem
+                    }
 
                     enableEmptySections={true}
 

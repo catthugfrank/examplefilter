@@ -7,6 +7,7 @@ import {
     View,
     SafeAreaView,
 } from 'react-native';
+
 import Modal from 'react-native-modal';
 
 import MakeModal from "./src/MakeModal";
@@ -18,6 +19,12 @@ export default class Example extends Component {
 
     renderModalContent = () => (
         <View style={styles.content}>
+            <View style={styles.back}>
+            <Button
+                onPress={()=> this.setState({visibleModal: null})}
+                    title ="Back"
+                    />
+            </View>
             <MakeModal>
 
             </MakeModal>
@@ -179,6 +186,7 @@ const styles = StyleSheet.create({
         backgroundColor: 'white',
         justifyContent: 'center',
         alignItems: 'center',
+        paddingTop: 20,
 
         flex:1,
     },
@@ -221,5 +229,8 @@ const styles = StyleSheet.create({
     customBackdropText: {
         marginTop: 10,
         fontSize: 17,
+    },
+    back: {
+        marginRight: 310 //fix
     },
 });
